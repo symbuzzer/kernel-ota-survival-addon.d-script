@@ -22,7 +22,6 @@ case "$1" in
     dd if=/dev/block/bootdevice/by-name/boot of=/tmp/kernel_backup-"$Date".img
   ;;
   restore)
-    sleep 5 &&
-    dd if=/tmp/kernel_backup-"$Date".img of=/dev/block/bootdevice/by-name/boot &
+    sleep 5 && dd if=/tmp/kernel_backup-"$Date".img of=/dev/block/bootdevice/by-name/boot &
   ;;
 esac
