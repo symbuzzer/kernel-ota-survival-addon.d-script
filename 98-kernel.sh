@@ -20,15 +20,9 @@ fi
 case "$1" in
   backup)
     dd if=/dev/block/bootdevice/by-name/boot of=/tmp/kernel_backup-"$Date".img
-    dd if=/dev/block/bootdevice/by-name/boot_a of=/tmp/kernel_a_backup-"$Date".img
-    dd if=/dev/block/bootdevice/by-name/boot_b of=/tmp/kernel_b_backup-"$Date".img
-      echo "   ui_print \"- Backing up kernel\""
   ;;
   restore)
-    sleep 5
-    dd if=/tmp/kernel_backup-"$Date".img of=/dev/block/bootdevice/by-name/boot
-    dd if=/tmp/kernel_a_backup-"$Date".img of=/dev/block/bootdevice/by-name/boot_a
-    dd if=/tmp/kernel_b_backup-"$Date".img of=/dev/block/bootdevice/by-name/boot_b
-    echo "   ui_print \"- Restoring kernel\""
+    sleep 5 &&
+    dd if=/tmp/kernel_backup-"$Date".img of=/dev/block/bootdevice/by-name/boot &
   ;;
 esac
