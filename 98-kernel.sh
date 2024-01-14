@@ -27,7 +27,6 @@ case "$1" in
   backup)
     if [ "$(is_ab_device)" = "1" ]; then
         slot_suffix=$($GETPROP ro.boot.slot_suffix)
-        dd if="/dev/block/bootdevice/by-name/boot$slot_suffix" of="$TMP/boot.img"
         dd if="/dev/block/bootdevice/by-name/boot$slot_suffix" of="/tmp/kernel_backup.img"
     else
         dd if="/dev/block/bootdevice/by-name/boot" of="/tmp/kernel_backup.img"
