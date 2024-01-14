@@ -3,8 +3,7 @@
 # ADDOND_VERSION=2
 #
 # /system/addon.d/98-kernel.sh
-# During an OTA upgrade, this script backs up /dev/block/bootdevice/by-name/boot,
-# /system is formatted and reinstalled, then the file is restored.
+# v1.0.1 bu symbuzzer
 # Based on LineageOS' addon.d script, modified by Simon1511@XDA and symbuzzer@XDA
 #
 
@@ -20,31 +19,16 @@ fi
 
 case "$1" in
   backup)
-    # Backup of the actual kernel
-    if grep -qs "/data" /proc/mounts; then
-        umount /data
-    fi
-    mount /data
-    dd if=/dev/block/bootdevice/by-name/boot of=/data/kernel_backup-"$Date".img
+    dd if=/dev/block/bootdevice/by-name/boot of=/tmp/kernel_backup-"$Date".img
+    dd if=/dev/block/bootdevice/by-name/boot_a of=/tmp/kernel_a_backup-"$Date".img
+    dd if=/dev/block/bootdevice/by-name/boot_b of=/tmp/kernel_b_backup-"$Date".img
+    ui_print "kernel backedup!"
   ;;
   restore)
-    # Restore Kernel
-    if grep -qs "/data" /proc/mounts; then
-        umount /data
-    fi
-    mount /data
-    sleep 5 && dd if=/data/kernel_backup-"$Date".img of=/dev/block/bootdevice/by-name/boot &
-  ;;
-  pre-backup)
-    # Stub
-  ;;
-  post-backup)
-    # Stub
-  ;;
-  pre-restore)
-    # Stub
-  ;;
-  post-restore)
-    # Stub
+    sleep 5
+    dd if=/tmp/kernel_backup-"$Date".img of=/dev/block/bootdevice/by-name/boot
+    dd if=/tmp/kernel_a_backup-"$Date".img of=/dev/block/bootdevice/by-name/boot_a
+    dd if=/tmp/kernel_b_backup-"$Date".img of=/dev/block/bootdevice/by-name/boot_b
+    ui_print "kernel restored!"
   ;;
 esac
