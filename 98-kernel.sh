@@ -9,23 +9,36 @@
 
 . /tmp/backuptool.functions &
 
-Date=$(date '+%Y%m%d')
-
-# This file only exists if the user is rooted with Magisk
-# We don't want Magisk to override Kernel
 if [ -f /tmp/addon.d/99-magisk.sh ]; then
     chmod -x /tmp/addon.d/99-magisk.sh
 fi
 
+is_ab_device() {
+local S="$($GETPROP "ro.boot.slot_suffix")"
+local U="$($GETPROP "ro.build.ab_update")"
+    if [ -n "$S" -a "$U" = "true" ]; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
 case "$1" in
   backup)
-    dd if=/dev/block/bootdevice/by-name/boot of=/tmp/kernel_backup-"$Date".img
-    dd if=/dev/block/bootdevice/by-name/boot_a of=/tmp/kernel_backup-a-"$Date".img
-    dd if=/dev/block/bootdevice/by-name/boot_b of=/tmp/kernel_backup-b-"$Date".img
+    if [ "$(is_ab_device)" = "1" ]; then
+        slot_suffix=$($GETPROP ro.boot.slot_suffix)
+        dd if="/dev/block/by-name/boot$slot_suffix" of="$TMP/boot.img"
+        dd if="/dev/block/bootdevice/by-name/boot$slot_suffix" of="/tmp/kernel_backup.img"
+    else
+        dd if="/dev/block/bootdevice/by-name/boot" of="/tmp/kernel_backup.img"
+    fi
   ;;
   restore)
-    sleep 5 && dd if=/tmp/kernel_backup-"$Date".img of=/dev/block/bootdevice/by-name/boot &
-    sleep 5 && dd if=/tmp/kernel_backup-a-"$Date".img of=/dev/block/bootdevice/by-name/boot_a &
-    sleep 5 && dd if=/tmp/kernel_backup-b-"$Date".img of=/dev/block/bootdevice/by-name/boot_b &
+    if [ "$(is_ab_device)" = "1" ]; then
+        slot_suffix=$($GETPROP ro.boot.slot_suffix)
+        sleep 5 && dd if="/tmp/kernel_backup.img" of="/dev/block/bootdevice/by-name/boot$slot_suffix" &
+    else
+        sleep 5 && dd if="/tmp/kernel_backup.img" of="/dev/block/bootdevice/by-name/boot" &
+    fi
   ;;
 esac
