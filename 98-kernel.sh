@@ -3,7 +3,7 @@
 # ADDOND_VERSION=2
 #
 # /system/addon.d/98-kernel.sh
-# v1.0.1 bu symbuzzer
+# v1.0.1 by symbuzzer
 # Based on LineageOS' addon.d script, modified by Simon1511@XDA and symbuzzer@XDA
 #
 
